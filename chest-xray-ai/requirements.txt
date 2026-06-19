@@ -1,13 +1,22 @@
-streamlit>=1.30.0
-torch>=2.0.0
-torchvision>=0.15.0
-torchxrayvision>=1.2.0
-numpy>=1.24.0
-opencv-python>=4.8.0
-Pillow>=10.0.0
-pydicom>=2.4.0
-scikit-image>=0.21.0
-requests>=2.31.0
-reportlab>=4.0.0
-pandas>=2.0.0
-matplotlib>=3.7.0
+streamlit==1.30.0
+
+numpy
+pillow
+pandas
+
+requests
+
+# 轻量可视化（可选）
+matplotlib
+
+# 医学影像基础
+pydicom
+scikit-image
+
+# OpenCV 用轻量版本（避免GUI依赖）
+opencv-python-headless
+
+# PyTorch（CPU版本，关键）
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.0.0+cpu
+torchvision==0.15.0+cpu
