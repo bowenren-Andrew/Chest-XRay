@@ -1,14 +1,13 @@
-streamlit>=1.30.0
-torch>=2.0.0
-torchvision>=0.15.0
-torchxrayvision>=1.2.0
-numpy>=1.24.0
-opencv-python>=4.8.0
-Pillow>=10.0.0
-pydicom>=2.4.0
-scikit-image>=0.21.0
-requests>=2.31.0
-reportlab>=4.0.0
-pandas>=2.0.0
-matplotlib>=3.7.0
-torch
+streamlit
+
+numpy
+pillow
+pandas
+
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+torch==2.0.0+cpu
+torchvision==0.15.0+cpu
+
+# 先保守一点（避免炸）
+opencv-python-headless
