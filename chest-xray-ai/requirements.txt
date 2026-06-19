@@ -1,22 +1,17 @@
 streamlit==1.30.0
 
 numpy
-pillow
 pandas
+pillow
 
 requests
 
-# 轻量可视化（可选）
-matplotlib
-
-# 医学影像基础
 pydicom
 scikit-image
 
-# OpenCV 用轻量版本（避免GUI依赖）
 opencv-python-headless
 
-# PyTorch（CPU版本，关键）
+# PyTorch CPU版本（关键）
 --extra-index-url https://download.pytorch.org/whl/cpu
 torch==2.0.0+cpu
 torchvision==0.15.0+cpu
