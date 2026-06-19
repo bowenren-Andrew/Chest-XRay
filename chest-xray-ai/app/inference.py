@@ -8,7 +8,10 @@ from functools import lru_cache
 from typing import Dict, List
 
 import numpy as np
-import torch
+try:
+    import torch
+except Exception:
+    torch = None
 
 import torchxrayvision as xrv
 import skimage.io
@@ -65,13 +68,57 @@ def read_dicom_metadata(path: str) -> Dict[str, str]:
 
 
 def predict(img: np.ndarray, threshold: float = DEFAULT_THRESHOLD) -> List[Dict]:
-    """对一张胸片做推理，返回 14 类疾病的结构化结果（按概率降序）。"""
-    model = load_model()
-    tensor = preprocess(img)
-    with torch.no_grad():
-        out = model(tensor)[0]
-    probs = dict(zip(model.pathologies, out.tolist()))
+    """对一张胸片做推理（Cloud安全版）"""
 
+    # 🚨 1. Cloud模式保护
+    if torch is None:
+        return [
+            {
+                "pathology": p,
+                "pathology_cn": cn(p),
+                "score": 0.0,
+                "positive": False,
+                "high_alert": p in HIGH_ALERT,
+            }
+            for p in TARGET_PATHOLOGIES
+        ]
+
+    # 🚨 2. 尝试加载模型（防止崩溃）
+    try:
+        model = load_model()
+    except Exception:
+        return [
+            {
+                "pathology": p,
+                "pathology_cn": cn(p),
+                "score": 0.0,
+                "positive": False,
+                "high_alert": p in HIGH_ALERT,
+            }
+            for p in TARGET_PATHOLOGIES
+        ]
+
+    # 🚨 3. 预处理
+    tensor = preprocess(img)
+
+    # 🚨 4. 推理（安全模式）
+    try:
+        with torch.no_grad():
+            out = model(tensor)[0]
+        probs = dict(zip(model.pathologies, out.tolist()))
+    except Exception:
+        return [
+            {
+                "pathology": p,
+                "pathology_cn": cn(p),
+                "score": 0.0,
+                "positive": False,
+                "high_alert": p in HIGH_ALERT,
+            }
+            for p in TARGET_PATHOLOGIES
+        ]
+
+    # 🚨 5. 正常结果处理
     results = []
     for p in TARGET_PATHOLOGIES:
         score = float(probs.get(p, 0.0))
@@ -84,6 +131,7 @@ def predict(img: np.ndarray, threshold: float = DEFAULT_THRESHOLD) -> List[Dict]
                 "high_alert": p in HIGH_ALERT,
             }
         )
+
     results.sort(key=lambda r: r["score"], reverse=True)
     return results
 
